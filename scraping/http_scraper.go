@@ -1,4 +1,4 @@
-package index
+package scraping
 
 import (
 	"fmt"
@@ -7,16 +7,14 @@ import (
 	"time"
 )
 
-type HTTPGetScraper struct {
-	URL    string
-	OnBody func(string)
+type HTTPScraper struct {
 }
 
-func NewHTTPGetScraper(url string) *HTTPGetScraper {
-	return &HTTPGetScraper{URL: url}
+func NewHTTPScraper() *HTTPScraper {
+	return &HTTPScraper{}
 }
 
-func (hg *HTTPGetScraper) Get(url string) (string, error) {
+func (hs *HTTPScraper) Get(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
@@ -28,17 +26,16 @@ func (hg *HTTPGetScraper) Get(url string) (string, error) {
 	return string(body), nil
 }
 
-
-func (hg *HTTPGetScraper) Start() {
+func (hs *HTTPScraper) StartGetHTML(url string, onBody func(string)) {
 	ticker := time.NewTicker(5 * time.Second)
 	for {
 		select {
 		case <-ticker.C:
-			body, err := hg.Get(hg.URL)
+			body, err := hs.Get(url)
 			if err != nil {
 				fmt.Println(err)
 			} else {
-				hg.OnBody(body)
+				onBody(body)
 			}
 		}
 	}

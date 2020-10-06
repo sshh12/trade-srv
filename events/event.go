@@ -3,11 +3,11 @@ package events
 import "fmt"
 
 type Event struct {
-	Source string
-	Title   string
-	Content string
-	URL string
-	CacheKey string
+	Source    string
+	Title     string
+	Content   string
+	URL       string
+	CacheKey  string
 	CacheHash string
 }
 
@@ -25,10 +25,10 @@ func (es *EventStream) OnEventArticle(source string, title string, url string, c
 	es.OnEvent(&Event{Source: source, Title: title, URL: url, Content: content, CacheKey: url})
 }
 
-func (es *EventStream) OnEventArticleResolveBody(source string, title string, url string, resolver func(*Event)) {
+func (es *EventStream) OnEventArticleResolveBody(source string, title string, url string, contentResolver func(string) string) {
 	event := &Event{Source: source, Title: title, URL: url, CacheKey: url}
-	if true {
-		resolver(event)
+	if event.Content == "" {
+		event.Content = contentResolver(event.URL)
 	}
 	es.OnEvent(event)
 }
