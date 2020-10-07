@@ -2,10 +2,11 @@ package indexers
 
 import (
 	"fmt"
-	events "github.com/sshh12/trade-srv/events"
-	scraping "github.com/sshh12/trade-srv/scraping"
 	"regexp"
 	"strings"
+
+	events "github.com/sshh12/trade-srv/events"
+	scraping "github.com/sshh12/trade-srv/scraping"
 )
 
 const source string = "marketwatch"

@@ -1,8 +1,9 @@
 package indexers
 
 import (
-	events "github.com/sshh12/trade-srv/events"
 	"time"
+
+	events "github.com/sshh12/trade-srv/events"
 )
 
 type IndexerOptions struct {
