@@ -85,7 +85,6 @@ func (es *EventStream) OnEvent(evt *Event) {
 	}
 	evt.TimeLogged = time.Now().Format(time.RFC3339)
 	evt.HostName = hostname
-	fmt.Println(evt.TimeLogged)
 	if err := es.db.AddEvent(evt); err != nil {
 		log.Fatal(err)
 	}

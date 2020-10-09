@@ -88,7 +88,7 @@ func onFinVizCalendar(es *events.EventStream, body string, scraper *scraping.HTT
 		}
 		evt := &events.Event{
 			Source:        finvizSource,
-			Type:          "calendar",
+			Type:          "economic_calendar",
 			Name:          name,
 			ActualValue:   actual,
 			ExpectedValue: expected,
@@ -114,7 +114,7 @@ func onFinVizIndex(es *events.EventStream, body string, scraper *scraping.HTTPSc
 		date := time.Now().Format(time.RFC3339)[:10]
 		evt := &events.Event{
 			Source:           finvizSource,
-			Type:             "signal",
+			Type:             "technical_signal",
 			Name:             signal,
 			ConfirmedSymbols: []string{sym},
 			TimeFor:          date,
@@ -135,7 +135,7 @@ func onFinVizNews(es *events.EventStream, body string, scraper *scraping.HTTPScr
 			Type:      "article",
 			Title:     title,
 			URL:       url,
-			CacheHash: events.HashKey(finvizSource + url),
+			CacheHash: events.HashKey(url),
 		}
 		es.OnEvent(evt)
 	}

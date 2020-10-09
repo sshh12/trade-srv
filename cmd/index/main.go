@@ -2,11 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"regexp"
+	"strings"
 	"time"
 
 	events "github.com/sshh12/trade-srv/events"
 	indexers "github.com/sshh12/trade-srv/indexers"
+	"github.com/sshh12/trade-srv/scraping"
 )
 
 func main() {
@@ -20,6 +24,7 @@ func main() {
 	}
 	runAll := flag.Bool("run_all", false, "Run all indexers")
 	warmUp := flag.Int("warmup", 60, "Discard events that occur in this number of seconds")
+	addSymbol := flag.String("add_sym", "", "Add symbol to database")
 	flag.Parse()
 	if *runAll {
 		for name := range indexers.AllIndexers {
@@ -35,13 +40,44 @@ func main() {
 		return
 	}
 	log.Println("Connected to postgres://" + *pgAddr)
+	if *addSymbol != "" {
+		for _, sym := range strings.Split(*addSymbol, ",") {
+			registerSymbol(sym, db)
+		}
+	}
 	es := events.NewEventStream(db, time.Duration(*warmUp)*time.Second)
+	indexerRunning := false
 	for name, indexer := range indexers.AllIndexers {
 		if *indexersSelected[name] {
 			log.Println("Starting " + name)
+			indexerRunning = true
 			go indexer(es, &indexers.IndexerOptions{})
 		}
 	}
-	for {
+	if indexerRunning {
+		for {
+		}
 	}
+}
+
+func registerSymbol(sym string, db *events.Database) {
+	symClean := strings.TrimSpace(strings.ToUpper(sym))
+	scraper := scraping.NewHTTPScraper()
+	resp, err := scraper.Get(fmt.Sprintf("https://www.marketwatch.com/investing/stock/%s/profile", symClean))
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	nameRg := regexp.MustCompile("class=\"company__name\">([^<]+?)<")
+	nameMatch := nameRg.FindStringSubmatch(resp)
+	indRg := regexp.MustCompile("Industry<\\/small>\\s*?<span class=\"primary\\s*\">([^<]+?)<")
+	indMatch := indRg.FindStringSubmatch(resp)
+	secRg := regexp.MustCompile("Sector<\\/small>\\s*?<span class=\"primary\\s*\">([^<]+?)<")
+	secMatch := secRg.FindStringSubmatch(resp)
+	if len(nameMatch) == 0 || len(indMatch) == 0 || len(secMatch) == 0 {
+		log.Fatal(symClean + " lookup failed")
+		return
+	}
+	symbol := &events.Symbol{Sym: symClean, Name: nameMatch[1], Sector: secMatch[1], Industry: indMatch[1]}
+	db.AddSymbol(symbol)
 }
