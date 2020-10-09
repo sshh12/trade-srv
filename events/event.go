@@ -1,8 +1,11 @@
 package events
 
 import (
-	"crypto/sha1"
+	"crypto/sha256"
 	"fmt"
+	"log"
+	"sync"
+	"time"
 )
 
 type Event struct {
@@ -10,42 +13,69 @@ type Event struct {
 	Title     string
 	Content   string
 	URL       string
-	CacheKey  string
 	CacheHash string
 }
 
-type EventStream struct{}
+type EventStream struct {
+	cacheLock        sync.RWMutex
+	cache            map[string]bool
+	warmUpOver       int64
+	warmUpInProgress bool
+}
 
-func NewEventStream() *EventStream {
-	return &EventStream{}
+func NewEventStream(warmUp time.Duration) *EventStream {
+	return &EventStream{
+		cacheLock:        sync.RWMutex{},
+		cache:            make(map[string]bool),
+		warmUpInProgress: true,
+		warmUpOver:       time.Now().Add(warmUp).Unix(),
+	}
+}
+
+func (es *EventStream) hasCached(evt *Event) bool {
+	es.cacheLock.Lock()
+	defer es.cacheLock.Unlock()
+	return es.cache[evt.CacheHash]
+}
+
+func (es *EventStream) hasCachedAddIfNot(evt *Event) bool {
+	es.cacheLock.Lock()
+	defer es.cacheLock.Unlock()
+	val := es.cache[evt.CacheHash]
+	if !val {
+		es.cache[evt.CacheHash] = true
+	}
+	return val
 }
 
 func (es *EventStream) OnEvent(evt *Event) {
 	if evt.CacheHash == "" {
 		panic(evt)
 	}
-	fmt.Println(evt)
-}
-
-func (es *EventStream) OnEventArticle(source string, title string, url string, content string) {
-	es.OnEvent(&Event{Source: source, Title: title, URL: url, Content: content, CacheKey: url})
+	if es.hasCachedAddIfNot(evt) {
+		return
+	}
+	if es.warmUpInProgress {
+		if es.warmUpOver > time.Now().Unix() {
+			log.Println("Discarded during warmup", evt.CacheHash)
+			return
+		}
+		es.warmUpInProgress = false
+	}
+	fmt.Println("miss", evt.CacheHash)
 }
 
 func (es *EventStream) OnEventArticleResolveBody(source string, title string, url string, contentResolver func(string) string) {
-	event := &Event{Source: source, Title: title, URL: url, CacheKey: url}
-	setEventHash(event)
-	if event.Content == "" {
+	event := &Event{Source: source, Title: title, URL: url, CacheHash: hashKey(url)}
+	if event.Content == "" && !es.hasCached(event) {
 		event.Content = contentResolver(event.URL)
 	}
 	es.OnEvent(event)
 }
 
-func setEventHash(evt *Event) {
-	if evt.CacheKey == "" {
-		panic(evt)
-	}
-	h := sha1.New()
-	h.Write([]byte(evt.CacheKey))
+func hashKey(key string) string {
+	h := sha256.New()
+	h.Write([]byte(key))
 	bs := h.Sum(nil)
-	evt.CacheHash = fmt.Sprintf("%x\n", bs)
+	return fmt.Sprintf("%x\n", bs)
 }
