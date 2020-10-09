@@ -4,29 +4,41 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"log"
+	"os"
 	"sync"
 	"time"
 )
 
+var hostname = ""
+
+func init() {
+	hostname, _ = os.Hostname()
+}
+
 type Event struct {
-	Source    string
-	Title     string
-	Content   string
-	URL       string
-	CacheHash string
+	ID         int
+	Source     string `pg:"type:'varchar'"`
+	Title      string `pg:"type:'varchar'"`
+	Content    string `pg:"type:'text'"`
+	URL        string `pg:"type:'varchar'"`
+	CacheHash  string `pg:"type:'varchar',unique"`
+	TimeLogged string `pg:"type:'timestamptz'"`
+	HostName   string `pg:"type:'varchar'"`
 }
 
 type EventStream struct {
 	cacheLock        sync.RWMutex
 	cache            map[string]bool
+	db               *Database
 	warmUpOver       int64
 	warmUpInProgress bool
 }
 
-func NewEventStream(warmUp time.Duration) *EventStream {
+func NewEventStream(db *Database, warmUp time.Duration) *EventStream {
 	return &EventStream{
 		cacheLock:        sync.RWMutex{},
 		cache:            make(map[string]bool),
+		db:               db,
 		warmUpInProgress: true,
 		warmUpOver:       time.Now().Add(warmUp).Unix(),
 	}
@@ -61,6 +73,12 @@ func (es *EventStream) OnEvent(evt *Event) {
 			return
 		}
 		es.warmUpInProgress = false
+	}
+	evt.TimeLogged = time.Now().Format(time.RFC3339)
+	evt.HostName = hostname
+	fmt.Println(evt.TimeLogged)
+	if err := es.db.AddEvent(evt); err != nil {
+		log.Fatal(err)
 	}
 	fmt.Println("miss", evt.CacheHash)
 }
