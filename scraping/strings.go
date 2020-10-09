@@ -45,6 +45,7 @@ var wordsRepls [][]string = [][]string{
 	{"&aacute;", "a"},
 	{"&ocirc;", "o"},
 	{"&trade;", ""},
+	{"&times;", "x"},
 	// Weird chars
 	{"•", "*"},
 	{"●", "* "},

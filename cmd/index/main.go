@@ -24,7 +24,7 @@ func main() {
 	}
 	runAll := flag.Bool("run_all", false, "Run all indexers")
 	warmUp := flag.Int("warmup", 60, "Discard events that occur in this number of seconds")
-	addSymbol := flag.String("add_sym", "", "Add symbol to database")
+	addSymbol := flag.String("add_sym", "", "Register symbol(s) in database")
 	flag.Parse()
 	if *runAll {
 		for name := range indexers.AllIndexers {
@@ -79,5 +79,9 @@ func registerSymbol(sym string, db *events.Database) {
 		return
 	}
 	symbol := &events.Symbol{Sym: symClean, Name: nameMatch[1], Sector: secMatch[1], Industry: indMatch[1]}
-	db.AddSymbol(symbol)
+	if err := db.AddSymbol(symbol); err != nil {
+		log.Fatal(symClean + " registration failed")
+	} else {
+		log.Println(symClean + " added")
+	}
 }

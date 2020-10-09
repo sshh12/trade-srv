@@ -10,7 +10,7 @@ import (
 	scraping "github.com/sshh12/trade-srv/scraping"
 )
 
-const globalnewswireSource string = "globalnewswire"
+const globalNewsWireSource string = "globalnewswire"
 
 func startGlobalNewsWireIndexer(es *events.EventStream, opts *IndexerOptions) error {
 	rate := opts.PollRate
@@ -49,7 +49,7 @@ func onGlobalNewsWireBody(es *events.EventStream, body string, scraper *scraping
 		url := "https://www.globenewswire.com" + match[2]
 		company := match[1]
 		title := scraping.CleanHTMLText(company + " -- " + match[3])
-		es.OnEventArticleResolveBody(globalnewswireSource, title, url, func(url string) string {
+		es.OnEventArticleResolveBody(globalNewsWireSource, title, url, func(url string) string {
 			return parseGlobalNewsWireArticle(url, scraper)
 		})
 	}
