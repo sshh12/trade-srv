@@ -17,22 +17,23 @@ func init() {
 
 type Event struct {
 	ID               int
-	Type             string   `pg:"type:'varchar'"`
-	Source           string   `pg:"type:'varchar'"`
-	Title            string   `pg:"type:'varchar'"`
-	Content          string   `pg:"type:'text'"`
-	URL              string   `pg:"type:'varchar'"`
-	ConfirmedSymbols []string `pg:"type:'varchar',array"`
-	Name             string   `pg:"type:'varchar'"`
-	PrevValue        string   `pg:"type:'varchar'"`
-	ExpectedValue    string   `pg:"type:'varchar'"`
-	ActualValue      string   `pg:"type:'varchar'"`
-	Impact           string   `pg:"type:'varchar'"`
-	TimeFor          string   `pg:"type:'varchar'"`
-	TimeReported     string   `pg:"type:'varchar'"`
-	CacheHash        string   `pg:"type:'varchar',unique"`
-	TimeLogged       string   `pg:"type:'timestamptz'"`
-	HostName         string   `pg:"type:'varchar'"`
+	Type             string                 `pg:"type:'varchar'"`
+	Source           string                 `pg:"type:'varchar'"`
+	Title            string                 `pg:"type:'varchar'"`
+	Content          string                 `pg:"type:'text'"`
+	URL              string                 `pg:"type:'varchar'"`
+	ConfirmedSymbols []string               `pg:"type:'varchar',array"`
+	Name             string                 `pg:"type:'varchar'"`
+	PrevValue        string                 `pg:"type:'varchar'"`
+	ExpectedValue    string                 `pg:"type:'varchar'"`
+	ActualValue      string                 `pg:"type:'varchar'"`
+	Impact           string                 `pg:"type:'varchar'"`
+	TimeFor          string                 `pg:"type:'varchar'"`
+	TimeReported     string                 `pg:"type:'varchar'"`
+	Extras           map[string]interface{} `pg:"type:'json'"`
+	CacheHash        string                 `pg:"type:'varchar',unique"`
+	TimeLogged       string                 `pg:"type:'timestamptz'"`
+	HostName         string                 `pg:"type:'varchar'"`
 }
 
 type EventStream struct {
