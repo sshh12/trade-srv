@@ -12,7 +12,7 @@ import (
 func main() {
 	pgUser := flag.String("pg_user", "postgres", "Postgres username")
 	pgPassword := flag.String("pg_pass", "password", "Postgres password")
-	pgAddr := flag.String("pg_addr", "localhost:5432", "Postgres host address")
+	pgAddr := flag.String("pg_addr", "localhost:5432", "Postgres host and port")
 	pgName := flag.String("pg_db", "tradesrv", "Postgres database name")
 	indexersSelected := make(map[string]*bool)
 	for name := range indexers.AllIndexers {

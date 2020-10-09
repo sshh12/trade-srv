@@ -7,15 +7,23 @@ import (
 	"time"
 )
 
+const defaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"
+
 type HTTPScraper struct {
+	client *http.Client
 }
 
 func NewHTTPScraper() *HTTPScraper {
-	return &HTTPScraper{}
+	return &HTTPScraper{client: &http.Client{}}
 }
 
 func (hs *HTTPScraper) Get(url string) (string, error) {
-	resp, err := http.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Set("User-Agent", defaultUserAgent)
+	if err != nil {
+		return "", err
+	}
+	resp, err := hs.client.Do(req)
 	if err != nil {
 		return "", err
 	}

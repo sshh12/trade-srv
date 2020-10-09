@@ -16,14 +16,23 @@ func init() {
 }
 
 type Event struct {
-	ID         int
-	Source     string `pg:"type:'varchar'"`
-	Title      string `pg:"type:'varchar'"`
-	Content    string `pg:"type:'text'"`
-	URL        string `pg:"type:'varchar'"`
-	CacheHash  string `pg:"type:'varchar',unique"`
-	TimeLogged string `pg:"type:'timestamptz'"`
-	HostName   string `pg:"type:'varchar'"`
+	ID               int
+	Type             string   `pg:"type:'varchar'"`
+	Source           string   `pg:"type:'varchar'"`
+	Title            string   `pg:"type:'varchar'"`
+	Content          string   `pg:"type:'text'"`
+	URL              string   `pg:"type:'varchar'"`
+	ConfirmedSymbols []string `pg:"type:'varchar',array"`
+	Name             string   `pg:"type:'varchar'"`
+	PrevValue        string   `pg:"type:'varchar'"`
+	ExpectedValue    string   `pg:"type:'varchar'"`
+	ActualValue      string   `pg:"type:'varchar'"`
+	Impact           string   `pg:"type:'varchar'"`
+	TimeFor          string   `pg:"type:'varchar'"`
+	TimeReported     string   `pg:"type:'varchar'"`
+	CacheHash        string   `pg:"type:'varchar',unique"`
+	TimeLogged       string   `pg:"type:'timestamptz'"`
+	HostName         string   `pg:"type:'varchar'"`
 }
 
 type EventStream struct {
@@ -84,14 +93,14 @@ func (es *EventStream) OnEvent(evt *Event) {
 }
 
 func (es *EventStream) OnEventArticleResolveBody(source string, title string, url string, contentResolver func(string) string) {
-	event := &Event{Source: source, Title: title, URL: url, CacheHash: hashKey(url)}
+	event := &Event{Type: "article", Source: source, Title: title, URL: url, CacheHash: HashKey(url)}
 	if event.Content == "" && !es.hasCached(event) {
 		event.Content = contentResolver(event.URL)
 	}
 	es.OnEvent(event)
 }
 
-func hashKey(key string) string {
+func HashKey(key string) string {
 	h := sha256.New()
 	h.Write([]byte(key))
 	bs := h.Sum(nil)

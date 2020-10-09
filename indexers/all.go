@@ -13,4 +13,5 @@ type IndexerOptions struct {
 var AllIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	"marketwatch":    startMarketWatchIndexer,
 	"globalnewswire": startGlobalNewsWireIndexer,
+	"finviz":         startFinVizIndexer,
 }

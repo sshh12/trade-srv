@@ -1,7 +1,6 @@
 package indexers
 
 import (
-	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -26,7 +25,6 @@ func startGlobalNewsWireIndexer(es *events.EventStream, opts *IndexerOptions) er
 }
 
 func parseGlobalNewsWireArticle(url string, scraper *scraping.HTTPScraper) string {
-	fmt.Println(url)
 	body, err := scraper.Get(url)
 	if err != nil {
 		log.Println(err)
