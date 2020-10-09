@@ -15,4 +15,5 @@ var AllIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	"globalnewswire": startGlobalNewsWireIndexer,
 	"finviz":         startFinVizIndexer,
 	"prnewswire":     startPrNewsWireIndexer,
+	"barrons":        startBarronsIndexer,
 }

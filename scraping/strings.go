@@ -95,7 +95,9 @@ func CleanHTMLText(raw string) string {
 	raw = RegexReplace(raw, "([a-z])\\s{2,}([A-Z])", "$1 $2")
 	raw = RegexReplace(raw, "([a-z%])([A-Z])", "$1 $2")
 	raw = RegexReplace(raw, "%(\\w)", "% $2")
-	raw = RegexReplace(raw, "(\\w),([+\\w])", "$1, $2")
+	raw = RegexReplace(raw, "([\\w\\)]),([+\\w])", "$1, $2")
 	raw = RegexReplace(raw, "(\\w):([A-Za-z])", "$1: $2")
+	raw = RegexReplace(raw, "([a-z])\\.([A-Z])", "$1. $2")
+	raw = RegexReplace(raw, "(\\w)\\(", "$1 (")
 	return strings.TrimSpace(raw)
 }
