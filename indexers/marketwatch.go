@@ -1,18 +1,24 @@
 package indexers
 
 import (
-	"fmt"
-	events "github.com/sshh12/trade-srv/events"
-	scraping "github.com/sshh12/trade-srv/scraping"
+	"log"
 	"regexp"
 	"strings"
+	"time"
+
+	events "github.com/sshh12/trade-srv/events"
+	scraping "github.com/sshh12/trade-srv/scraping"
 )
 
-const source string = "marketwatch"
+const marketWatchSource string = "marketwatch"
 
 func startMarketWatchIndexer(es *events.EventStream, opts *IndexerOptions) error {
+	rate := opts.PollRate
+	if rate == 0 {
+		rate = 10 * time.Second
+	}
 	scraper := scraping.NewHTTPScraper()
-	scraper.StartGetHTML("https://www.marketwatch.com/latest-news", func(body string) {
+	scraper.StartGetHTML("https://www.marketwatch.com/latest-news", rate, func(body string) {
 		onMarketWatchBody(es, body, scraper)
 	})
 	return nil
@@ -21,7 +27,7 @@ func startMarketWatchIndexer(es *events.EventStream, opts *IndexerOptions) error
 func parseMarketWatchArticle(url string, scraper *scraping.HTTPScraper) string {
 	body, err := scraper.Get(url)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return ""
 	}
 	rg, _ := regexp.Compile("<p>([\\s\\S]+?)<\\/p>")
@@ -42,7 +48,7 @@ func onMarketWatchBody(es *events.EventStream, body string, scraper *scraping.HT
 	for _, match := range matches {
 		url := strings.ReplaceAll(match[1], "?mod=newsviewer_click", "")
 		title := scraping.CleanHTMLText(match[2])
-		es.OnEventArticleResolveBody(source, title, url, func(url string) string {
+		es.OnEventArticleResolveBody(marketWatchSource, title, url, func(url string) string {
 			return parseMarketWatchArticle(url, scraper)
 		})
 	}

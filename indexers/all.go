@@ -1,8 +1,9 @@
 package indexers
 
 import (
-	events "github.com/sshh12/trade-srv/events"
 	"time"
+
+	events "github.com/sshh12/trade-srv/events"
 )
 
 type IndexerOptions struct {
@@ -10,5 +11,6 @@ type IndexerOptions struct {
 }
 
 var AllIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
-	"marketwatch": startMarketWatchIndexer,
+	"marketwatch":    startMarketWatchIndexer,
+	"globalnewswire": startGlobalNewsWireIndexer,
 }

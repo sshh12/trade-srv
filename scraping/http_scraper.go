@@ -26,8 +26,8 @@ func (hs *HTTPScraper) Get(url string) (string, error) {
 	return string(body), nil
 }
 
-func (hs *HTTPScraper) StartGetHTML(url string, onBody func(string)) {
-	ticker := time.NewTicker(5 * time.Second)
+func (hs *HTTPScraper) StartGetHTML(url string, rate time.Duration, onBody func(string)) {
+	ticker := time.NewTicker(rate)
 	for {
 		select {
 		case <-ticker.C:
