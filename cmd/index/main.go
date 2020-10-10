@@ -19,16 +19,16 @@ func main() {
 	pgAddr := flag.String("pg_addr", "localhost:5432", "Postgres host and port")
 	pgName := flag.String("pg_db", "tradesrv", "Postgres database name")
 	indexersSelected := make(map[string]*bool)
-	for name := range indexers.AllIndexers {
+	for name := range indexers.EventIndexers {
 		indexersSelected[name] = flag.Bool("run_"+name, false, "Run "+name+" indexer")
 	}
-	runAll := flag.Bool("run_all", false, "Run all indexers")
+	runAllEvents := flag.Bool("run_all_events", false, "Run all event indexers")
 	warmUp := flag.Int("warmup", 120, "Discard events that occur in this number of seconds")
 	addSymbol := flag.String("add_sym", "", "Register symbol(s) in database")
 	flag.Parse()
-	if *runAll {
-		for name := range indexers.AllIndexers {
-			indexersSelected[name] = runAll
+	if *runAllEvents {
+		for name := range indexers.EventIndexers {
+			indexersSelected[name] = runAllEvents
 		}
 	}
 	if *warmUp < 0 {
@@ -47,7 +47,7 @@ func main() {
 	}
 	es := events.NewEventStream(db, time.Duration(*warmUp)*time.Second)
 	indexerRunning := false
-	for name, indexer := range indexers.AllIndexers {
+	for name, indexer := range indexers.EventIndexers {
 		if *indexersSelected[name] {
 			log.Println("Starting " + name)
 			indexerRunning = true

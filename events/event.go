@@ -79,7 +79,7 @@ func (es *EventStream) OnEvent(evt *Event) {
 	}
 	if es.warmUpInProgress {
 		if es.warmUpOver > time.Now().Unix() {
-			log.Println("Discarded during warmup", evt.CacheHash)
+			log.Println("Event Discarded (Warmup)", evt.CacheHash)
 			return
 		}
 		es.warmUpInProgress = false
@@ -89,7 +89,7 @@ func (es *EventStream) OnEvent(evt *Event) {
 	if err := es.db.AddEvent(evt); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("miss", evt.CacheHash)
+	fmt.Println("Event Mined", evt.CacheHash)
 }
 
 func (es *EventStream) OnEventArticleResolveBody(source string, title string, url string, contentResolver func(string) string) {
