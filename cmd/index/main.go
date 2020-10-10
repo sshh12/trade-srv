@@ -23,7 +23,7 @@ func main() {
 		indexersSelected[name] = flag.Bool("run_"+name, false, "Run "+name+" indexer")
 	}
 	runAll := flag.Bool("run_all", false, "Run all indexers")
-	warmUp := flag.Int("warmup", 60, "Discard events that occur in this number of seconds")
+	warmUp := flag.Int("warmup", 120, "Discard events that occur in this number of seconds")
 	addSymbol := flag.String("add_sym", "", "Register symbol(s) in database")
 	flag.Parse()
 	if *runAll {

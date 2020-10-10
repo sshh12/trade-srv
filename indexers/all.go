@@ -17,4 +17,10 @@ var AllIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	"prnewswire":       startPrNewsWireIndexer,
 	"barrons":          startBarronsIndexer,
 	"biopharmcatalyst": startBioPharmCatalystIndexer,
+	"benzinga":         startBenzingaIndexer,
+	"reuters":          startReutersIndexer,
+	"cnn":              startCNNIndexer,
+	"earningscast":     startEarningsCastIndexer,
+	"businesswire":     startBusinessWireSourceIndexer,
+	"seekingalpha":     startSeekingAlphaIndexer,
 }
