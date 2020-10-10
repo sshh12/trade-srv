@@ -23,4 +23,6 @@ var EventIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	"earningscast":     startEarningsCastIndexer,
 	"businesswire":     startBusinessWireSourceIndexer,
 	"seekingalpha":     startSeekingAlphaIndexer,
+	"nasdaq":           startNasdaqIndexer,
+	"investingcom":     startInvestingComIndexer,
 }
