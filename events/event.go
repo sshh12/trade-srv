@@ -24,6 +24,7 @@ type Event struct {
 	URL              string                 `pg:"type:'varchar'"`
 	ConfirmedSymbols []string               `pg:"type:'varchar',array"`
 	Name             string                 `pg:"type:'varchar'"`
+	Author           string                 `pg:"type:'varchar'"`
 	PrevValue        string                 `pg:"type:'varchar'"`
 	ExpectedValue    string                 `pg:"type:'varchar'"`
 	ActualValue      string                 `pg:"type:'varchar'"`

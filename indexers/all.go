@@ -7,7 +7,12 @@ import (
 )
 
 type IndexerOptions struct {
-	PollRate time.Duration
+	PollRate              time.Duration
+	TwitterConsumerKey    string
+	TwitterConsumerSecret string
+	TwitterAccessToken    string
+	TwitterAccessSecret   string
+	TwitterNames          []string
 }
 
 var EventIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
@@ -25,4 +30,5 @@ var EventIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	"seekingalpha":     startSeekingAlphaIndexer,
 	"nasdaq":           startNasdaqIndexer,
 	"investingcom":     startInvestingComIndexer,
+	"twitter":          startTwitterIndexer,
 }

@@ -18,6 +18,11 @@ func main() {
 	pgPassword := flag.String("pg_pass", "password", "Postgres password")
 	pgAddr := flag.String("pg_addr", "localhost:5432", "Postgres host and port")
 	pgName := flag.String("pg_db", "tradesrv", "Postgres database name")
+	twKey := flag.String("tw_key", "", "Twitter consumer key")
+	twSecret := flag.String("tw_secret", "", "Twitter consumer secret")
+	twToken := flag.String("tw_token", "", "Twitter access token")
+	twTokenSecret := flag.String("tw_token_secret", "", "Twitter access token secret")
+	twNames := flag.String("tw_names", "", "Twitter accounts to follow")
 	indexersSelected := make(map[string]*bool)
 	for name := range indexers.EventIndexers {
 		indexersSelected[name] = flag.Bool("run_"+name, false, "Run "+name+" indexer")
@@ -47,11 +52,19 @@ func main() {
 	}
 	es := events.NewEventStream(db, time.Duration(*warmUp)*time.Second)
 	indexerRunning := false
+	opts := &indexers.IndexerOptions{
+		PollRate:              0,
+		TwitterConsumerKey:    *twKey,
+		TwitterConsumerSecret: *twSecret,
+		TwitterAccessToken:    *twToken,
+		TwitterAccessSecret:   *twTokenSecret,
+		TwitterNames:          strings.Split(*twNames, ","),
+	}
 	for name, indexer := range indexers.EventIndexers {
 		if *indexersSelected[name] {
 			log.Println("Starting " + name)
 			indexerRunning = true
-			go indexer(es, &indexers.IndexerOptions{})
+			go indexer(es, opts)
 		}
 	}
 	if indexerRunning {
