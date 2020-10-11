@@ -33,7 +33,7 @@ func parseBenzingaArticle(url string, scraper *scraping.HTTPScraper) string {
 		log.Println(err)
 		return ""
 	}
-	rg := regexp.MustCompile("<p[ \\w\"=:/\\.]*>([\\s\\S]+?)<\\/p>")
+	rg := regexp.MustCompile("<p[ \\w\"=;\\-:/\\.]*>([\\s\\S]+?)<\\/p>")
 	matches := rg.FindAllStringSubmatch(body, -1)
 	paragraphs := make([]string, 0)
 	for _, match := range matches {

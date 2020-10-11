@@ -1,0 +1,23 @@
+name: AutoRelease
+on: 
+  release:
+    types: [created]
+jobs:
+  releases-matrix:
+    name: Release Go Binaries
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [windows, linux]
+        goarch: [amd64]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: wangyoucao577/go-release-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          project_path: ./cmd/index
+          binary_name: trade-srv-index
+          goversion: https://dl.google.com/go/go1.15.2.linux-amd64.tar.gz
+          extra_files: LICENSE README.md
