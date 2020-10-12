@@ -20,11 +20,11 @@ func startTwitterIndexer(es *events.EventStream, opts *IndexerOptions) error {
 		rate = 10 * time.Second
 	}
 	if opts.TwitterConsumerKey == "" || opts.TwitterAccessToken == "" {
-		log.Fatal("No twitter login provided")
+		log.Print("No twitter login provided")
 		return nil
 	}
 	if len(opts.TwitterNames) == 0 || opts.TwitterNames[0] == "" {
-		log.Fatal("No twitter names provided")
+		log.Print("No twitter names provided")
 		return nil
 	}
 	log.Println("Listening to tweets from", opts.TwitterNames)
@@ -40,7 +40,7 @@ func startTwitterIndexer(es *events.EventStream, opts *IndexerOptions) error {
 			ScreenName: name,
 		})
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
 			return err
 		}
 		followIDs = append(followIDs, user.IDStr)
@@ -77,7 +77,7 @@ func startTwitterIndexer(es *events.EventStream, opts *IndexerOptions) error {
 	}
 	stream, err := client.Streams.Filter(filterParams)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		return err
 	}
 	demux.HandleChan(stream.Messages)

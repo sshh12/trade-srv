@@ -88,14 +88,14 @@ func (es *EventStream) OnEvent(evt *Event) {
 	evt.TimeLogged = time.Now().Format(time.RFC3339)
 	evt.HostName = hostname
 	if err := es.db.AddEvent(evt); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	log.Print("Event Mined - ", evt.CacheHash)
 }
 
 func (es *EventStream) OnEventArticleResolveBody(source string, title string, url string, contentResolver func(string) string) {
 	event := &Event{Type: "article", Source: source, Title: title, URL: url, CacheHash: HashKey(url)}
-	if event.Content == "" && !es.hasCached(event) {
+	if event.Content == "" && !es.hasCached(event) && !es.warmUpInProgress {
 		event.Content = contentResolver(event.URL)
 	}
 	es.OnEvent(event)

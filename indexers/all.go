@@ -33,4 +33,5 @@ var EventIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	twitterSource:          startTwitterIndexer,
 	federalReserveSource:   startFederalReserveIndexer,
 	cnbcSource:             startCNBCIndexer,
+	blsTEDSource:           startBLSTEDIndexer,
 }

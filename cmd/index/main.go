@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	pgURL := flag.String("pg_url", "", "Postgres url (use instead of individual pg options)")
 	pgUser := flag.String("pg_user", "postgres", "Postgres username")
 	pgPassword := flag.String("pg_pass", "password", "Postgres password")
 	pgAddr := flag.String("pg_addr", "localhost:5432", "Postgres host and port")
@@ -39,12 +40,21 @@ func main() {
 	if *warmUp < 0 {
 		*warmUp = 0
 	}
-	db, err := events.NewPostgresDatabase(*pgUser, *pgPassword, *pgAddr, *pgName)
+	var db *events.Database
+	var err error
+	var postgresName string
+	if *pgURL != "" {
+		db, err = events.NewPostgresDatabaseFromURL(*pgURL)
+		postgresName = *pgURL
+	} else {
+		db, err = events.NewPostgresDatabase(*pgUser, *pgPassword, *pgAddr, *pgName)
+		postgresName = "postgres://" + *pgAddr
+	}
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	log.Println("Connected to postgres://" + *pgAddr)
+	log.Print("Connected to " + postgresName)
 	if *addSymbol != "" {
 		for _, sym := range strings.Split(*addSymbol, ",") {
 			registerSymbol(sym, db)
