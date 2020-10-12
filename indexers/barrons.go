@@ -28,7 +28,7 @@ func startBarronsIndexer(es *events.EventStream, opts *IndexerOptions) error {
 func parseBarronsArticle(url string, scraper *scraping.HTTPScraper) string {
 	body, err := scraper.Get(url)
 	if err != nil {
-		log.Println(err)
+		log.WithField("source", barronsSource).Error(err)
 		return ""
 	}
 	rg := regexp.MustCompile("<p>([\\s\\S]+?)<\\/p>")

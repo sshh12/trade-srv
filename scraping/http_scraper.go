@@ -9,14 +9,17 @@ import (
 
 const defaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"
 
+// HTTPScraper is a HTTP-based webscraper
 type HTTPScraper struct {
 	client *http.Client
 }
 
+// NewHTTPScraper creates a new HTTPScraper
 func NewHTTPScraper() *HTTPScraper {
 	return &HTTPScraper{client: &http.Client{}}
 }
 
+// Get does a HTTP Get request
 func (hs *HTTPScraper) Get(url string) (string, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", defaultUserAgent)
@@ -34,6 +37,7 @@ func (hs *HTTPScraper) Get(url string) (string, error) {
 	return string(body), nil
 }
 
+// StartGetHTML starts a loop of sending GET requests to the given url
 func (hs *HTTPScraper) StartGetHTML(url string, rate time.Duration, onBody func(string)) {
 	ticker := time.NewTicker(rate)
 	for {

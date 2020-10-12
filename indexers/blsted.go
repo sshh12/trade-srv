@@ -28,7 +28,7 @@ func startBLSTEDIndexer(es *events.EventStream, opts *IndexerOptions) error {
 func parseBLSTEDArticle(url string, scraper *scraping.HTTPScraper) string {
 	body, err := scraper.Get(url)
 	if err != nil {
-		log.Println(err)
+		log.WithField("source", blsTEDSource).Error(err)
 		return ""
 	}
 	rg := regexp.MustCompile("<p>([\\s\\S]+?)<\\/p>")

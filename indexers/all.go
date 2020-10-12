@@ -6,6 +6,7 @@ import (
 	events "github.com/sshh12/trade-srv/events"
 )
 
+// IndexerOptions are options that can be passed to indexers
 type IndexerOptions struct {
 	PollRate              time.Duration
 	TwitterConsumerKey    string
@@ -15,6 +16,7 @@ type IndexerOptions struct {
 	TwitterNames          []string
 }
 
+// EventIndexers is all the events indexers
 var EventIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	marketWatchSource:      startMarketWatchIndexer,
 	globalNewsWireSource:   startGlobalNewsWireIndexer,

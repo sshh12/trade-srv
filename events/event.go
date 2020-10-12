@@ -16,6 +16,7 @@ func init() {
 	hostname, _ = os.Hostname()
 }
 
+// Event represents an events that occured in the world
 type Event struct {
 	ID               int
 	Type             string                 `pg:"type:'varchar'"`
@@ -38,6 +39,7 @@ type Event struct {
 	HostName         string                 `pg:"type:'varchar'"`
 }
 
+// EventStream is a stream of events
 type EventStream struct {
 	cacheLock        sync.RWMutex
 	cache            map[string]bool
@@ -46,6 +48,7 @@ type EventStream struct {
 	warmUpInProgress bool
 }
 
+// NewEventStream creates an event stream
 func NewEventStream(db *Database, warmUp time.Duration) *EventStream {
 	return &EventStream{
 		cacheLock:        sync.RWMutex{},
@@ -72,6 +75,7 @@ func (es *EventStream) hasCachedAddIfNot(evt *Event) bool {
 	return val
 }
 
+// OnEvent handles the occurance of an event
 func (es *EventStream) OnEvent(evt *Event) {
 	if evt.CacheHash == "" {
 		panic(evt)
@@ -94,6 +98,8 @@ func (es *EventStream) OnEvent(evt *Event) {
 	log.WithField("hash", evt.CacheHash).Debug("Event Mined")
 }
 
+// OnEventArticleResolveBody handles an article event, if appropriate it calls contentResolver
+// for the content of the article
 func (es *EventStream) OnEventArticleResolveBody(source string, title string, url string, contentResolver func(string) string) {
 	event := &Event{Type: "article", Source: source, Title: title, URL: url, CacheHash: HashKey(url)}
 	if event.Content == "" && !es.hasCached(event) && !es.warmUpInProgress {
@@ -102,6 +108,7 @@ func (es *EventStream) OnEventArticleResolveBody(source string, title string, ur
 	es.OnEvent(event)
 }
 
+// HashKey hashes the input string
 func HashKey(key string) string {
 	h := sha256.New()
 	h.Write([]byte(key))

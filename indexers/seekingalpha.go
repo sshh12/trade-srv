@@ -3,10 +3,11 @@ package indexers
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	events "github.com/sshh12/trade-srv/events"
 	scraping "github.com/sshh12/trade-srv/scraping"
@@ -40,12 +41,12 @@ func parseSeekingAlphaArticle(url string, scraper *scraping.HTTPScraper) string 
 	apiURL := fmt.Sprintf("https://seekingalpha.com/api/v3/%s/%s?include=author%%2CprimaryTickers", path, articleCode)
 	body, err := scraper.Get(apiURL)
 	if err != nil {
-		log.Println(err)
+		log.WithField("source", seekingAlphaSource).Error(err)
 		return ""
 	}
 	var jsonBody map[string]interface{}
 	if err := json.Unmarshal([]byte(body), &jsonBody); err != nil {
-		log.Println(err)
+		log.WithField("source", seekingAlphaSource).Error(err)
 		return ""
 	}
 	data, ok := jsonBody["data"].(map[string]interface{})

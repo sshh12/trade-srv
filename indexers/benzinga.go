@@ -31,7 +31,7 @@ func startBenzingaIndexer(es *events.EventStream, opts *IndexerOptions) error {
 func parseBenzingaArticle(url string, scraper *scraping.HTTPScraper) string {
 	body, err := scraper.Get(url)
 	if err != nil {
-		log.Println(err)
+		log.WithField("source", benzingaSource).Error(err)
 		return ""
 	}
 	rg := regexp.MustCompile("<p[ \\w\"=;\\-:/\\.]*>([\\s\\S]+?)<\\/p>")

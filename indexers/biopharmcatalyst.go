@@ -33,7 +33,7 @@ func onFDACalendar(es *events.EventStream, body string, scraper *scraping.HTTPSc
 	for _, match := range matches {
 		var data [](map[string]interface{})
 		if err := json.Unmarshal([]byte(match[1]), &data); err != nil {
-			log.Println(err)
+			log.WithField("source", bioPharmCatalystSource).Error(err)
 			continue
 		}
 		for _, item := range data {

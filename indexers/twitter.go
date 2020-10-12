@@ -27,7 +27,7 @@ func startTwitterIndexer(es *events.EventStream, opts *IndexerOptions) error {
 		log.Warning("No twitter names provided")
 		return nil
 	}
-	log.Println("Listening to tweets from", opts.TwitterNames)
+	log.Info("Listening to tweets from", opts.TwitterNames)
 
 	config := oauth1.NewConfig(opts.TwitterConsumerKey, opts.TwitterConsumerSecret)
 	token := oauth1.NewToken(opts.TwitterAccessToken, opts.TwitterAccessSecret)
@@ -77,7 +77,7 @@ func startTwitterIndexer(es *events.EventStream, opts *IndexerOptions) error {
 	}
 	stream, err := client.Streams.Filter(filterParams)
 	if err != nil {
-		log.Error(err)
+		log.WithField("source", twitterSource).Error(err)
 		return err
 	}
 	demux.HandleChan(stream.Messages)

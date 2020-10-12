@@ -77,11 +77,13 @@ var wordsRepls [][]string = [][]string{
 	{"🚨", ""},
 }
 
+// RegexReplace does a replace all with the given regex
 func RegexReplace(s string, regex string, new string) string {
 	re := regexp.MustCompile(regex)
 	return re.ReplaceAllString(s, new)
 }
 
+// CleanHTMLText cleans text extracted from HTML
 func CleanHTMLText(raw string) string {
 	for _, repl := range wordsRepls {
 		raw = strings.ReplaceAll(raw, repl[0], repl[1])

@@ -1,10 +1,11 @@
 package indexers
 
 import (
-	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	events "github.com/sshh12/trade-srv/events"
 	scraping "github.com/sshh12/trade-srv/scraping"
@@ -27,7 +28,7 @@ func startGlobalNewsWireIndexer(es *events.EventStream, opts *IndexerOptions) er
 func parseGlobalNewsWireArticle(url string, scraper *scraping.HTTPScraper) string {
 	body, err := scraper.Get(url)
 	if err != nil {
-		log.Println(err)
+		log.WithField("source", globalNewsWireSource).Error(err)
 		return ""
 	}
 	rg, _ := regexp.Compile("itemprop=\"articleBody\">([\\s\\S]+?)<\\/span>")

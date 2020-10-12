@@ -1,10 +1,11 @@
 package indexers
 
 import (
-	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	events "github.com/sshh12/trade-srv/events"
 	scraping "github.com/sshh12/trade-srv/scraping"
@@ -30,7 +31,7 @@ func startReutersIndexer(es *events.EventStream, opts *IndexerOptions) error {
 func parseReutersArticle(url string, scraper *scraping.HTTPScraper) string {
 	body, err := scraper.Get(url)
 	if err != nil {
-		log.Println(err)
+		log.WithField("source", reutersSource).Error(err)
 		return ""
 	}
 	rg := regexp.MustCompile("<p[ \\w\"\\-=:/\\.]*>([\\s\\S]+?)<\\/p>")
