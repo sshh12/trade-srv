@@ -14,8 +14,7 @@ import (
 )
 
 func main() {
-	log.SetLevel(log.DebugLevel)
-	log.SetFormatter(&log.TextFormatter{ForceColors: true})
+	logLevel := flag.String("log", "debug", "Log level")
 	pgURL := flag.String("pg_url", "", "Postgres url (use instead of individual pg options)")
 	pgUser := flag.String("pg_user", "postgres", "Postgres username")
 	pgPassword := flag.String("pg_pass", "password", "Postgres password")
@@ -34,6 +33,12 @@ func main() {
 	warmUp := flag.Int("warmup", 120, "Discard events that occur in this number of seconds")
 	addSymbol := flag.String("add_sym", "", "Register symbol(s) in database")
 	flag.Parse()
+	loggingLevel, err := log.ParseLevel(*logLevel)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetLevel(loggingLevel)
+	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	if *runAllEvents {
 		for name := range indexers.EventIndexers {
 			indexersSelected[name] = runAllEvents
@@ -43,7 +48,6 @@ func main() {
 		*warmUp = 0
 	}
 	var db *events.Database
-	var err error
 	var postgresName string
 	if *pgURL != "" {
 		db, err = events.NewPostgresDatabaseFromURL(*pgURL)
