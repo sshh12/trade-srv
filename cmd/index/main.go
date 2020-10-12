@@ -3,17 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	events "github.com/sshh12/trade-srv/events"
 	indexers "github.com/sshh12/trade-srv/indexers"
 	"github.com/sshh12/trade-srv/scraping"
 )
 
 func main() {
+	log.SetLevel(log.DebugLevel)
+	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	pgURL := flag.String("pg_url", "", "Postgres url (use instead of individual pg options)")
 	pgUser := flag.String("pg_user", "postgres", "Postgres username")
 	pgPassword := flag.String("pg_pass", "password", "Postgres password")
@@ -54,7 +56,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-	log.Print("Connected to " + postgresName)
+	log.Info("Connected to " + postgresName)
 	if *addSymbol != "" {
 		for _, sym := range strings.Split(*addSymbol, ",") {
 			registerSymbol(sym, db)
@@ -77,7 +79,7 @@ func main() {
 		}
 	}
 	if len(indexersRunning) > 0 {
-		log.Printf("Running %v", indexersRunning)
+		log.Infof("Running %v", indexersRunning)
 		for {
 		}
 	}
@@ -88,7 +90,7 @@ func registerSymbol(sym string, db *events.Database) {
 	scraper := scraping.NewHTTPScraper()
 	resp, err := scraper.Get(fmt.Sprintf("https://www.marketwatch.com/investing/stock/%s/profile", symClean))
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 		return
 	}
 	nameRg := regexp.MustCompile("class=\"company__name\">([^<]+?)<")
@@ -98,13 +100,13 @@ func registerSymbol(sym string, db *events.Database) {
 	secRg := regexp.MustCompile("Sector<\\/small>\\s*?<span class=\"primary\\s*\">([^<]+?)<")
 	secMatch := secRg.FindStringSubmatch(resp)
 	if len(nameMatch) == 0 || len(indMatch) == 0 || len(secMatch) == 0 {
-		log.Fatal(symClean + " lookup failed")
+		log.Error(symClean + " lookup failed")
 		return
 	}
 	symbol := &events.Symbol{Sym: symClean, Name: nameMatch[1], Sector: secMatch[1], Industry: indMatch[1]}
 	if err := db.AddSymbol(symbol); err != nil {
-		log.Fatal(symClean + " registration failed")
+		log.Error(symClean + " registration failed")
 	} else {
-		log.Println(symClean + " added")
+		log.Info(symClean + " added")
 	}
 }

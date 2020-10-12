@@ -3,10 +3,11 @@ package events
 import (
 	"crypto/sha256"
 	"fmt"
-	"log"
 	"os"
 	"sync"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 var hostname = ""
@@ -80,7 +81,7 @@ func (es *EventStream) OnEvent(evt *Event) {
 	}
 	if es.warmUpInProgress {
 		if es.warmUpOver > time.Now().Unix() {
-			log.Print("Event Discarded (Warmup) - ", evt.CacheHash)
+			log.WithField("hash", evt.CacheHash).WithField("reason", "warmup").Debug("Event Discarded")
 			return
 		}
 		es.warmUpInProgress = false
@@ -90,7 +91,7 @@ func (es *EventStream) OnEvent(evt *Event) {
 	if err := es.db.AddEvent(evt); err != nil {
 		log.Print(err)
 	}
-	log.Print("Event Mined - ", evt.CacheHash)
+	log.WithField("hash", evt.CacheHash).Debug("Event Mined")
 }
 
 func (es *EventStream) OnEventArticleResolveBody(source string, title string, url string, contentResolver func(string) string) {
@@ -105,5 +106,5 @@ func HashKey(key string) string {
 	h := sha256.New()
 	h.Write([]byte(key))
 	bs := h.Sum(nil)
-	return fmt.Sprintf("%x\n", bs)
+	return fmt.Sprintf("%x", bs)
 }

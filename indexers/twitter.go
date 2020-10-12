@@ -2,12 +2,12 @@ package indexers
 
 import (
 	"encoding/json"
-	"log"
 	"strings"
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
+	log "github.com/sirupsen/logrus"
 	events "github.com/sshh12/trade-srv/events"
 	scraping "github.com/sshh12/trade-srv/scraping"
 )
@@ -20,11 +20,11 @@ func startTwitterIndexer(es *events.EventStream, opts *IndexerOptions) error {
 		rate = 10 * time.Second
 	}
 	if opts.TwitterConsumerKey == "" || opts.TwitterAccessToken == "" {
-		log.Print("No twitter login provided")
+		log.Warning("No twitter login provided")
 		return nil
 	}
 	if len(opts.TwitterNames) == 0 || opts.TwitterNames[0] == "" {
-		log.Print("No twitter names provided")
+		log.Warning("No twitter names provided")
 		return nil
 	}
 	log.Println("Listening to tweets from", opts.TwitterNames)
@@ -77,7 +77,7 @@ func startTwitterIndexer(es *events.EventStream, opts *IndexerOptions) error {
 	}
 	stream, err := client.Streams.Filter(filterParams)
 	if err != nil {
-		log.Print(err)
+		log.Error(err)
 		return err
 	}
 	demux.HandleChan(stream.Messages)
