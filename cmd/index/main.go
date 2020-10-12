@@ -51,7 +51,6 @@ func main() {
 		}
 	}
 	es := events.NewEventStream(db, time.Duration(*warmUp)*time.Second)
-	indexerRunning := false
 	opts := &indexers.IndexerOptions{
 		PollRate:              0,
 		TwitterConsumerKey:    *twKey,
@@ -60,14 +59,15 @@ func main() {
 		TwitterAccessSecret:   *twTokenSecret,
 		TwitterNames:          strings.Split(*twNames, ","),
 	}
+	indexersRunning := make([]string, 0)
 	for name, indexer := range indexers.EventIndexers {
 		if *indexersSelected[name] {
-			log.Println("Starting " + name)
-			indexerRunning = true
+			indexersRunning = append(indexersRunning, name)
 			go indexer(es, opts)
 		}
 	}
-	if indexerRunning {
+	if len(indexersRunning) > 0 {
+		log.Printf("Running %v", indexersRunning)
 		for {
 		}
 	}
