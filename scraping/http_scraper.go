@@ -23,6 +23,8 @@ func NewHTTPScraper() *HTTPScraper {
 func (hs *HTTPScraper) Get(url string) (string, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", defaultUserAgent)
+	req.Header.Set("sec-ch-ua", "\"Chromium\";v=\"86\", \"\"Not\\A;Brand\";v=\"99\", \"Google Chrome\";v=\"86\"")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
 	if err != nil {
 		return "", err
 	}

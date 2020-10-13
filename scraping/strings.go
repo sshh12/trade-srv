@@ -49,6 +49,7 @@ var wordsRepls [][]string = [][]string{
 	{"&bull;", "* "},
 	{"&#x27;", "'"},
 	{"&minus;", "-"},
+	{"&apos;", "'"},
 	// Weird chars
 	{"•", "*"},
 	{"●", "* "},
@@ -88,9 +89,9 @@ func CleanHTMLText(raw string) string {
 	for _, repl := range wordsRepls {
 		raw = strings.ReplaceAll(raw, repl[0], repl[1])
 	}
-	raw = RegexReplace(raw, "<style[\\s\\w=\":/\\.\\-,\\'!%&+@\\|{}\\(\\);#~\\?]*>([\\s\\S]+?)<\\/style>", "")
-	raw = RegexReplace(raw, "<script[\\s\\w=\":/\\.\\-,\\'!%&+@\\|{}\\(\\);#~\\?]*>([\\s\\S]+?)<\\/script>", "")
-	raw = RegexReplace(raw, "<\\w+[\\s\\w=\":/\\.\\-,\\'!%&+@\\|#~{}\\(\\);\\?]*>", "")
+	raw = RegexReplace(raw, "<style[_\\s\\w=\":/\\.\\-,\\'!%$&+@\\|{}\\(\\);#~\\?]*>([\\s\\S]+?)<\\/style>", "")
+	raw = RegexReplace(raw, "<script[_\\s\\w=\":/\\.\\-,\\'!%$&+@\\|{}\\(\\);#~\\?]*>([\\s\\S]+?)<\\/script>", "")
+	raw = RegexReplace(raw, "<\\w+[_\\*\\s\\w=\":/\\.\\-,\\'!%$&+@\\|#~{}\\(\\);\\?]*>", "")
 	raw = RegexReplace(raw, "<\\/?[\\w\\-]+>", "")
 	raw = RegexReplace(raw, "<!-*[^>]+>", "")
 	raw = RegexReplace(raw, "&#[\\w\\d]+;", "")
