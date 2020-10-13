@@ -29,7 +29,7 @@ func main() {
 	for name := range indexers.EventIndexers {
 		indexersSelected[name] = flag.Bool("run_"+name, false, "Run "+name+" indexer")
 	}
-	runAllEvents := flag.Bool("run_all_events", false, "Run all event indexers")
+	runAllEvents := flag.Bool("run_all_events", false, fmt.Sprintf("Run all %d event indexers", len(indexers.EventIndexers)))
 	warmUp := flag.Int("warmup", 120, "Discard events that occur in this number of seconds")
 	addSymbol := flag.String("add_sym", "", "Register symbol(s) in database")
 	flag.Parse()
