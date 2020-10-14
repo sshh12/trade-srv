@@ -39,6 +39,18 @@ type Event struct {
 	HostName         string                 `pg:"type:'varchar'"`
 }
 
+// TDAOHLCV open, high, low, close
+type TDAOHLCV struct {
+	ID     string `pg:"type:'varchar',pk"`
+	Date   int
+	Symbol string `pg:"type:'varchar'"`
+	Open   float64
+	Close  float64
+	Low    float64
+	High   float64
+	Volume float64
+}
+
 // EventStream is a stream of events
 type EventStream struct {
 	cacheLock        sync.RWMutex
@@ -75,6 +87,11 @@ func (es *EventStream) hasCachedAddIfNot(evt *Event) bool {
 	return val
 }
 
+// GetSymbols gets db of symbols
+func (es *EventStream) GetSymbols() ([]Symbol, error) {
+	return es.db.GetSymbols()
+}
+
 // OnEvent handles the occurance of an event
 func (es *EventStream) OnEvent(evt *Event) {
 	if evt.CacheHash == "" {
@@ -106,6 +123,11 @@ func (es *EventStream) OnEventArticleResolveBody(source string, title string, ur
 		event.Content = contentResolver(event.URL)
 	}
 	es.OnEvent(event)
+}
+
+// OnMinOHLCVs handles several OHLCVs
+func (es *EventStream) OnMinOHLCVs(ticks []TDAOHLCV) error {
+	return es.db.AddMinOHLCVs(ticks)
 }
 
 // HashKey hashes the input string

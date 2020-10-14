@@ -14,6 +14,7 @@ func createTables(db *pg.DB) error {
 	models := []interface{}{
 		(*Event)(nil),
 		(*Symbol)(nil),
+		(*TDAOHLCV)(nil),
 	}
 	for _, model := range models {
 		err := db.Model(model).CreateTable(&orm.CreateTableOptions{IfNotExists: true})
@@ -67,4 +68,23 @@ func (database *Database) AddSymbol(sym *Symbol) error {
 		return err
 	}
 	return nil
+}
+
+// AddMinOHLCVs inserts a OHLCV into the database
+func (database *Database) AddMinOHLCVs(ticks []TDAOHLCV) error {
+	_, err := database.db.Model(&ticks).OnConflict("DO NOTHING").Insert()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetSymbols get symbols
+func (database *Database) GetSymbols() ([]Symbol, error) {
+	var symbols []Symbol
+	_, err := database.db.Query(&symbols, `SELECT * FROM symbols`)
+	if err != nil {
+		return nil, err
+	}
+	return symbols, nil
 }

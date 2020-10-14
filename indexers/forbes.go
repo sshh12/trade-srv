@@ -18,6 +18,12 @@ func startForbesIndexer(es *events.EventStream, opts *IndexerOptions) error {
 		rate = 10 * time.Second
 	}
 	scraper := scraping.NewHTTPScraper()
+	go scraper.StartGetHTML("https://www.forbes.com/money/", rate, func(body string) {
+		onForbesBody(es, body, scraper)
+	})
+	go scraper.StartGetHTML("https://www.forbes.com/business/", rate, func(body string) {
+		onForbesBody(es, body, scraper)
+	})
 	scraper.StartGetHTML("https://www.forbes.com/", rate, func(body string) {
 		onForbesBody(es, body, scraper)
 	})

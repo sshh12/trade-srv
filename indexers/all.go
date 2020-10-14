@@ -14,6 +14,7 @@ type IndexerOptions struct {
 	TwitterAccessToken    string
 	TwitterAccessSecret   string
 	TwitterNames          []string
+	TDAConsumerKey        string
 }
 
 // EventIndexers is all the events indexers
@@ -40,4 +41,9 @@ var EventIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	businessInsiderSource:  startBusinessInsiderIndexer,
 	forbesSource:           startForbesIndexer,
 	zacksSource:            startZacksIndexer,
+}
+
+// OtherIndexers are non-event indexers
+var OtherIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
+	tdaSource: startTDAIndexer,
 }
