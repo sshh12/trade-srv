@@ -69,7 +69,6 @@ func (s tdHTTPHeaderStore) GetState(req *http.Request) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return cookie.Value, nil
 }
 
@@ -90,13 +89,14 @@ func (h *tdHandlers) Authenticate(w http.ResponseWriter, req *http.Request) {
 
 func (h *tdHandlers) Callback(w http.ResponseWriter, req *http.Request) {
 	ctx := context.Background()
-	client, err := h.authenticator.FinishOAuth2Flow(ctx, w, req)
-	h.channel <- client
+	_, err := h.authenticator.FinishOAuth2Flow(ctx, w, req)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	client, err := h.authenticator.AuthenticatedClient(ctx, req)
+	h.channel <- client
 	http.Redirect(w, req, "/done", http.StatusTemporaryRedirect)
 }
 
@@ -136,7 +136,7 @@ func startTDAIndexer(es *events.EventStream, opts *IndexerOptions) error {
 	for {
 		symbols, err := es.GetSymbols()
 		if err != nil {
-			log.Error(err)
+			log.Error(tdaSource, err)
 			return err
 		}
 		rand.Shuffle(len(symbols), func(i, j int) {
@@ -145,7 +145,7 @@ func startTDAIndexer(es *events.EventStream, opts *IndexerOptions) error {
 		for _, sym := range symbols {
 			ph, _, err := client.PriceHistory.PriceHistory(ctx, sym.Sym, phOpts)
 			if err != nil {
-				log.Error(err)
+				log.Error(tdaSource, err)
 				continue
 			}
 			ticks := make([]events.TDAOHLCV, 0)
@@ -161,8 +161,9 @@ func startTDAIndexer(es *events.EventStream, opts *IndexerOptions) error {
 					Volume: candle.Volume,
 				})
 			}
+			log.Debugf("Got %d ticks for %s", len(ticks), sym.Sym)
 			if err := es.OnMinOHLCVs(ticks); err != nil {
-				log.Error(err)
+				log.Error(tdaSource, err)
 			}
 			time.Sleep(2 * time.Second)
 		}
