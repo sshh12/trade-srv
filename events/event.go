@@ -39,7 +39,7 @@ type Event struct {
 	HostName         string                 `pg:"type:'varchar'"`
 }
 
-// TDAOHLCV open, high, low, close
+// TDAOHLCV open, high, low, close, volume
 type TDAOHLCV struct {
 	ID     string `pg:"type:'varchar',pk"`
 	Date   int
@@ -49,6 +49,14 @@ type TDAOHLCV struct {
 	Low    float64
 	High   float64
 	Volume float64
+}
+
+// GuruFin for fin data
+type GuruFin struct {
+	ID     string `pg:"type:'varchar',pk"`
+	Date   int
+	Symbol string                 `pg:"type:'varchar'"`
+	Fin    map[string]interface{} `pg:"type:'json'"`
 }
 
 // EventStream is a stream of events

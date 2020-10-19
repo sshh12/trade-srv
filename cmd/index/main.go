@@ -118,9 +118,14 @@ func registerSymbol(sym string, db *events.Database) {
 		log.Error(symClean + " lookup failed")
 		return
 	}
-	symbol := &events.Symbol{Sym: symClean, Name: nameMatch[1], Sector: secMatch[1], Industry: indMatch[1]}
+	symbol := &events.Symbol{
+		Sym:      symClean,
+		Name:     scraping.CleanHTMLText(nameMatch[1]),
+		Sector:   scraping.CleanHTMLText(secMatch[1]),
+		Industry: scraping.CleanHTMLText(indMatch[1]),
+	}
 	if err := db.AddSymbol(symbol); err != nil {
-		log.Error(symClean + " registration failed")
+		log.Error(symClean+" registration failed", err)
 	} else {
 		log.Info(symClean + " added")
 	}

@@ -41,6 +41,7 @@ var EventIndexers = map[string]func(*events.EventStream, *IndexerOptions) error{
 	businessInsiderSource:  startBusinessInsiderIndexer,
 	forbesSource:           startForbesIndexer,
 	zacksSource:            startZacksIndexer,
+	washingtonPostSource:   startWashingtonPostIndexer,
 }
 
 // OtherIndexers are non-event indexers
