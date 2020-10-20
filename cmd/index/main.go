@@ -95,7 +95,12 @@ func main() {
 	}
 	if len(indexersRunning) > 0 {
 		log.Infof("Running %v", indexersRunning)
+		ticker := time.NewTicker(60 * time.Second)
 		for {
+			select {
+			case <-ticker.C:
+				log.Debug("Beep")
+			}
 		}
 	}
 }
