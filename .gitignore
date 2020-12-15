@@ -20,3 +20,6 @@ guru.py
 .vscode
 rpbuild.bat
 index
+dev.env.bat
+.ipynb_checkpoints/
+research/
