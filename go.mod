@@ -9,6 +9,8 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/sshh12/go-tdameritrade v0.0.0-20201014175805-1a3b093c5b9f
+	golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
+	golang.org/x/text v0.3.0
 	mellium.im/sasl v0.2.1 // indirect
 )

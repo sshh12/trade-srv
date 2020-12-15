@@ -40,7 +40,7 @@ func startTwitterIndexer(es *events.EventStream, opts *IndexerOptions) error {
 			ScreenName: name,
 		})
 		if err != nil {
-			log.Print(err)
+			log.Error(twitterSource, err)
 			return err
 		}
 		followIDs = append(followIDs, user.IDStr)

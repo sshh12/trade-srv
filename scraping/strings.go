@@ -1,6 +1,7 @@
 package scraping
 
 import (
+	"bytes"
 	"regexp"
 	"strings"
 )
@@ -106,4 +107,10 @@ func CleanHTMLText(raw string) string {
 	raw = RegexReplace(raw, "([a-z])\\.([A-Z])", "$1. $2")
 	raw = RegexReplace(raw, "(\\w)\\(", "$1 (")
 	return strings.TrimSpace(raw)
+}
+
+// FixForUTF8 detect and converts to utf-8
+func FixForUTF8(input []byte) string {
+	out := bytes.ReplaceAll(input, []byte{0xae}, []byte{})
+	return string(out)
 }

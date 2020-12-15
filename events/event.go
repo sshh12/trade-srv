@@ -118,7 +118,7 @@ func (es *EventStream) OnEvent(evt *Event) {
 	evt.TimeLogged = time.Now().Format(time.RFC3339)
 	evt.HostName = hostname
 	if err := es.db.AddEvent(evt); err != nil {
-		log.Print(err)
+		log.WithField("url", evt.URL).WithField("err", err).Error("Failed to upload event")
 	}
 	log.WithField("hash", evt.CacheHash).Debug("Event Mined")
 }

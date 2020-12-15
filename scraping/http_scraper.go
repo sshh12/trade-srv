@@ -36,7 +36,7 @@ func (hs *HTTPScraper) Get(url string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(body), nil
+	return FixForUTF8(body), nil
 }
 
 // StartGetHTML starts a loop of sending GET requests to the given url
