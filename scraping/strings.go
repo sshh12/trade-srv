@@ -1,9 +1,9 @@
 package scraping
 
 import (
-	"bytes"
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 var wordsRepls [][]string = [][]string{
@@ -109,14 +109,13 @@ func CleanHTMLText(raw string) string {
 	return strings.TrimSpace(raw)
 }
 
-// FixForUTF8 removes random bytes to get things to work w/utf-8
+// FixForUTF8 removes bytes to get things to work
 func FixForUTF8(input []byte) string {
-	out := bytes.ReplaceAll(input, []byte{0xe6, 0x20, 0xbc}, []byte{})
-	out = bytes.ReplaceAll(out, []byte{0xc3, 0x61}, []byte{})
-	out = bytes.ReplaceAll(out, []byte{0xc3, 0x20}, []byte{})
-	out = bytes.ReplaceAll(out, []byte{0xae}, []byte{})
-	out = bytes.ReplaceAll(out, []byte{0xb2}, []byte{})
-	out = bytes.ReplaceAll(out, []byte{0xb1}, []byte{})
-	out = bytes.ReplaceAll(out, []byte{0xb0}, []byte{})
-	return string(out)
+	clean := strings.Map(func(r rune) rune {
+		if r > unicode.MaxASCII {
+			return -1
+		}
+		return r
+	}, string(input))
+	return clean
 }
