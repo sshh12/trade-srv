@@ -22,4 +22,9 @@ rpbuild.bat
 index
 dev.env.bat
 .ipynb_checkpoints/
-research/
+dask-worker-space
+__pycache__
+research/temp
+research/*.dill
+research/*.json
+research/*.ipynb
