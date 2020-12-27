@@ -51,14 +51,6 @@ type TDAOHLCV struct {
 	Volume float64
 }
 
-// GuruFin for fin data
-type GuruFin struct {
-	ID     string `pg:"type:'varchar',pk"`
-	Date   int
-	Symbol string                 `pg:"type:'varchar'"`
-	Fin    map[string]interface{} `pg:"type:'json'"`
-}
-
 // EventStream is a stream of events
 type EventStream struct {
 	cacheLock        sync.RWMutex

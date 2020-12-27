@@ -15,7 +15,6 @@ func createTables(db *pg.DB) error {
 		(*Event)(nil),
 		(*Symbol)(nil),
 		(*TDAOHLCV)(nil),
-		(*GuruFin)(nil),
 	}
 	for _, model := range models {
 		err := db.Model(model).CreateTable(&orm.CreateTableOptions{IfNotExists: true})

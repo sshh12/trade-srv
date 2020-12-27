@@ -16,7 +16,7 @@ IsZero = make_trans_primitive(
     name="is_zero",
 )
 IsNaN = make_trans_primitive(
-    function=lambda array: (array == np.nan),
+    function=lambda array: array.isna(),
     input_types=[Numeric],
     return_type=Boolean,
     name="is_nan",
