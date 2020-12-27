@@ -28,3 +28,4 @@ research/temp
 research/*.dill
 research/*.json
 research/*.ipynb
+catboost_info/
