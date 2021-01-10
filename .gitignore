@@ -24,8 +24,3 @@ dev.env.bat
 .ipynb_checkpoints/
 dask-worker-space
 __pycache__
-research/temp
-research/*.dill
-research/*.json
-research/*.ipynb
-catboost_info/
