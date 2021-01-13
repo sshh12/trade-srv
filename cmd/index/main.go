@@ -25,7 +25,6 @@ func main() {
 	twToken := flag.String("tw_token", "", "Twitter access token")
 	twTokenSecret := flag.String("tw_token_secret", "", "Twitter access token secret")
 	twNames := flag.String("tw_names", "", "Twitter accounts to follow")
-	tdaKey := flag.String("tda_key", "", "TDA consumer key")
 	indexersSelected := make(map[string]*bool)
 	for name := range indexers.EventIndexers {
 		indexersSelected[name] = flag.Bool("run_"+name, false, "Run "+name+" indexer")
@@ -78,7 +77,6 @@ func main() {
 		TwitterAccessToken:    *twToken,
 		TwitterAccessSecret:   *twTokenSecret,
 		TwitterNames:          strings.Split(*twNames, ","),
-		TDAConsumerKey:        *tdaKey,
 	}
 	indexersRunning := make([]string, 0)
 	for name, indexer := range indexers.EventIndexers {

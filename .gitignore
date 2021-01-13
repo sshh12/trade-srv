@@ -15,7 +15,6 @@
 # vendor/
 out.txt
 *.temp
-tda.py
 guru.py
 .vscode
 rpbuild.bat
