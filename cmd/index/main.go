@@ -35,6 +35,7 @@ func main() {
 	runAllEvents := flag.Bool("run_all_events", false, fmt.Sprintf("Run all %d event indexers", len(indexers.EventIndexers)))
 	warmUp := flag.Int("warmup", 120, "Discard events that occur in this number of seconds")
 	addSymbol := flag.String("add_sym", "", "Register symbol(s) in database")
+	addFund := flag.String("add_fund", "", "Register symbol(s) in database")
 	flag.Parse()
 	loggingLevel, err := log.ParseLevel(*logLevel)
 	if err != nil {
@@ -66,7 +67,12 @@ func main() {
 	log.Info("Connected to " + postgresName)
 	if *addSymbol != "" {
 		for _, sym := range strings.Split(*addSymbol, ",") {
-			registerSymbol(sym, db)
+			registerStock(sym, db)
+		}
+	}
+	if *addFund != "" {
+		for _, sym := range strings.Split(*addFund, ",") {
+			registerFund(sym, db)
 		}
 	}
 	es := events.NewEventStream(db, time.Duration(*warmUp)*time.Second)
@@ -103,7 +109,7 @@ func main() {
 	}
 }
 
-func registerSymbol(sym string, db *events.Database) {
+func registerStock(sym string, db *events.Database) {
 	symClean := strings.TrimSpace(strings.ToUpper(sym))
 	scraper := scraping.NewHTTPScraper()
 	resp, err := scraper.Get(fmt.Sprintf("https://www.marketwatch.com/investing/stock/%s/profile", symClean))
@@ -126,6 +132,33 @@ func registerSymbol(sym string, db *events.Database) {
 		Name:     scraping.CleanHTMLText(nameMatch[1]),
 		Sector:   scraping.CleanHTMLText(secMatch[1]),
 		Industry: scraping.CleanHTMLText(indMatch[1]),
+	}
+	if err := db.AddSymbol(symbol); err != nil {
+		log.Error(symClean+" registration failed", err)
+	} else {
+		log.Info(symClean + " added")
+	}
+}
+
+func registerFund(sym string, db *events.Database) {
+	symClean := strings.TrimSpace(strings.ToUpper(sym))
+	scraper := scraping.NewHTTPScraper()
+	resp, err := scraper.Get(fmt.Sprintf("https://www.marketwatch.com/investing/fund/%s/", symClean))
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	nameRg := regexp.MustCompile("class=\"company__name\">([^<]+?)<")
+	nameMatch := nameRg.FindStringSubmatch(resp)
+	if len(nameMatch) == 0 {
+		log.Error(symClean + " lookup failed")
+		return
+	}
+	symbol := &events.Symbol{
+		Sym:      symClean,
+		Name:     scraping.CleanHTMLText(nameMatch[1]),
+		Sector:   "Fund",
+		Industry: "Fund",
 	}
 	if err := db.AddSymbol(symbol); err != nil {
 		log.Error(symClean+" registration failed", err)
